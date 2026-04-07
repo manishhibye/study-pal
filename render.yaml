@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: study-companion-backend
+    env: node
+    region: oregon
+    plan: starter
+    branch: main
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: studypal-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false
+databases:
+  - name: studypal-db
+    plan: starter
+    region: oregon

@@ -365,14 +365,7 @@ app.get('/api/db-stats', async (req, res) => {
   } catch (err) { handleError(res, err, 'Failed to fetch DB stats'); }
 });
 
-// ─── SERVE FRONTEND BUILD ─────────────────────────────────────────────────────
-const path = require('path');
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-// SPA routing - serve index.html for all non-API routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-});
+// ─── API-ONLY MODE (Frontend served separately on Vercel) ─────────────────────
 
 // ─── START ────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
