@@ -1,0 +1,19 @@
+{
+  "name": "study-companion",
+  "version": "2.0.0",
+  "description": "Intelligent Study Companion - Full Stack MongoDB App",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "build": "cd frontend && npm run build && cd ../backend",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ..",
+    "start": "cd backend && npm start"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
