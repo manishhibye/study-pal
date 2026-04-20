@@ -13,13 +13,26 @@ app.use(cors());
 app.use(express.json());
 
 // ─── DATABASE CONNECTION ──────────────────────────────────────────────────────
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log(`✅ MongoDB connected: ${MONGODB_URI}`))
-  .catch(err => {
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log(`✅ MongoDB connected: ${MONGODB_URI}`);
+  } catch (err) {
     console.error('❌ MongoDB connection failed:', err.message);
-    console.log('💡 Tip: Make sure MongoDB is running → mongod --dbpath /data/db');
-    process.exit(1);
-  });
+    console.log('🔄 Spinning up in-memory MongoDB fallback...');
+    try {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      const mongoServer = await MongoMemoryServer.create();
+      const memoryUri = mongoServer.getUri();
+      await mongoose.connect(memoryUri);
+      console.log(`✅ In-memory MongoDB connected: ${memoryUri}`);
+    } catch (memErr) {
+      console.error('❌ In-memory MongoDB fallback failed:', memErr.message);
+      process.exit(1);
+    }
+  }
+};
+connectDB();
 
 mongoose.connection.on('disconnected', () => console.warn('⚠️  MongoDB disconnected'));
 mongoose.connection.on('reconnected',  () => console.log('✅  MongoDB reconnected'));
@@ -368,9 +381,14 @@ app.get('/api/db-stats', async (req, res) => {
 // ─── API-ONLY MODE (Frontend served separately on Vercel) ─────────────────────
 
 // ─── START ────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n🎓 StudyPal API v2.0 — MongoDB Edition`);
-  console.log(`🚀 Server → http://localhost:${PORT}`);
-  console.log(`📦 Database → ${MONGODB_URI}`);
-  console.log(`\n💡 First time? Run: npm run seed\n`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`\n🎓 StudyPal API v2.0 — MongoDB Edition`);
+    console.log(`🚀 Server → http://localhost:${PORT}`);
+    console.log(`📦 Database → ${MONGODB_URI}`);
+    console.log(`\n💡 First time? Run: npm run seed\n`);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;

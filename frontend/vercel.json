@@ -2,12 +2,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "env": {
-    "VITE_API_URL": "@vite-api-url"
+    "VITE_API_URL": "https://study-companion-mongodb.vercel.app"
   },
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://your-render-backend-url.onrender.com/api/:path*"
+      "destination": "/api/:path*"
     }
   ]
 }
